@@ -1,4 +1,14 @@
-/*class ProductManager {
+// const express = require('express')
+import express from 'express'
+
+const app = express()
+const PORT = 8080
+
+
+app.use(express.urlencoded({extended:true}))
+
+
+class ProductManager {
     constructor(ruta) {
         this.path = ruta;
     }
@@ -79,29 +89,59 @@
 
 async function Main(){
     const pm = new ProductManager("salida.txt");
-    let res = await pm.getProducts();
-    console.log(res);
-    res = await pm.addProduct('producto prueba', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123', 25);
-    console.log(res);
-    res = await pm.getProducts();
-    console.log(res);
-    console.log("----------------------------");
-    res = await pm.getProductById(0);
-    console.log(res);
-    res = await pm.getProductById(-1);
-    console.log(res);
-    await pm.updateProduct(0, "Galletitas", "Con ananá", 520, "Sin imagen", "notfromitaly", 30000);
-    console.log("----------------------------");
-    res = await pm.getProducts();
-    console.log(res);
-    await pm.addProduct('eliminable', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123', 25);
-    await pm.deleteProduct(1);
-    res = await pm.getProducts();
+    data = await pm.getProducts();
     console.log(res);
 }
 
 
-Main();
+app.get('/', (request, response) =>{
+    response.send(data)
+})
+app.get('/products', (request, response) =>{
+    const { id } = request.params
+    const producto = data.find(products => products.id === id)
+    if(!producto) return response.send('No existe el producto')
+    response.send(data)
+
+})
 
 
-/*
+app.get('/params/:id/:titulo/:desc/:precio/:imagen/:codigo/:cantidad', ( req, res ) => {
+    console.log(req.params)
+    const { id, titulo, desc, precio, imagen, codigo, cantidad } = req.params
+    res.send({
+        id,
+        titulo,
+        desc,
+        precio,
+        imagen,
+        codigo,
+        cantidad,
+    })
+})
+
+
+app.get('/query', ( req, res ) => {
+
+
+let {id}=req.query
+
+if(data.findIndex( x => x.id == 2)){
+
+    return res.send.data[index]
+}
+
+let Primeros5= data.slice(0, 4);
+
+res.send({
+
+    Primeros5
+})
+
+})
+
+
+app.listen(PORT,err =>{
+    if (err)  console.log(err)
+    console.log(`Escuchando en el puerto ${PORT}`)
+})
